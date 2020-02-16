@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sam-blackberry-api
+spec:
+  type: ClusterIP
+  selector:
+    app: sam-blackberry-api
+  ports:
+    - name: nodejs
+      port: 3000
+      targetPort: nodejs
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sam-endpoint
+  labels:
+    app: endpoint
+data:
+  config.js: |-
+    module.exports = {
+        endpoint : {
+            account: "http://localhost:8080/",
+            cms: "http://sam-cranberry-cms:8080/"
+        }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sam-blackberry-api-v1
+  labels:
+    app: sam-blackberry-api
+    version: v1
+spec:
+  selector:
+    matchLabels:
+      app: sam-blackberry-api
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      name: sam-blackberry-api
+      labels:
+        app: sam-blackberry-api
+        version: v1
+    spec:
+      containers:
+        - name: sam-blackberry-api
+          image: myguddy/sam-blackberry-api:v1
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: app-config
+            mountPath: /app/config.js
+            subPath: "config.js"
+          ports:
+          - name: nodejs
+            containerPort: 3000
+          resources:
+            requests:
+              cpu: 300m
+              memory: 500Mi
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+      volumes:
+      - name: app-config
+        configMap:
+          name: sam-endpoint
+          items:
+          - key: config.js
+            path: config.js
+            
