@@ -1,9 +1,10 @@
 let express = require("express");
 let router = express.Router();
 let Client = require("node-rest-client").Client;
+let endpoint = require("../config").endpoint;
 
 let client = new Client();
-client.registerMethod("getContent", "http://localhost:8080/", "GET");
+client.registerMethod("getContent", `${endpoint.cms}/content/\${id}`, "GET");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
@@ -36,7 +37,9 @@ router.get("/account", (req, res, next) => {});
 router.put("/account", (req, res, next) => {});
 
 router.get("/content", (req, res, next) => {
-    let args = {};
+    let args = {
+        path: { "id": 120 },
+    };
     client.methods.getContent(args, (data, response) => {
       if(500 == response.statusCode){
         res.statusCode(500).json(data)
