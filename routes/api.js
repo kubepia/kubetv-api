@@ -4,11 +4,17 @@ let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
 
 let client = new Client();
-client.registerMethod("getContent", `${endpoint.cms}/content/\${id}`, "GET");
+client.registerMethod("getContent", `${endpoint.cms}/content/\${page}`, "GET");
+client.registerMethod(
+    "getContentByCategory",
+    `${endpoint.cms}/content/\${page}/\${category}`,
+    "GET"
+);
+client.registerMethod("getOffering", `${endpoint.cms}/offering`, "GET");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
-    res.render("index", { title: "Express" });
+    res.status(200).send("index of api service");
 });
 
 router.post("/login", (req, res, next) => {
@@ -36,19 +42,38 @@ router.get("/logout", (req, res, next) => {
 router.get("/account", (req, res, next) => {});
 router.put("/account", (req, res, next) => {});
 
-router.get("/content", (req, res, next) => {
+router.get("/content/:page", (req, res, next) => {
     let args = {
-        path: { "id": 120 },
+        path: { page: req.params.page }
     };
     client.methods.getContent(args, (data, response) => {
-      if(500 == response.statusCode){
-        res.statusCode(500).json(data)
-      }else{
-        res.json(data);
-      }
-      
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            res.json(data);
+        }
     });
 });
-router.get("/content/:id", (req, res, next) => {});
-router.get("/contents/:page", (req, res, next) => {});
+router.get("/content/:page/:category", (req, res, next) => {
+    let args = {
+        path: { page: req.params.page, category: req.params.category }
+    };
+    client.methods.getContentByCategory(args, (data, response) => {
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            res.json(data);
+        }
+    });
+});
+router.get("/offering", (req, res, next) => {
+    let args = {};
+    client.methods.getOffering(args, (data, response) => {
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            res.json(data);
+        }
+    });
+});
 module.exports = router;
