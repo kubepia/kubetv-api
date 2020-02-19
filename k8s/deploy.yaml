@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: sam-blackberry-api
+  name: api-svc
 spec:
   type: ClusterIP
   selector:
-    app: sam-blackberry-api
+    app: api
   ports:
     - name: nodejs
-      port: 3000
+      port: 3001
       targetPort: nodejs
 ---
 apiVersion: v1
@@ -30,26 +30,26 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sam-blackberry-api-v1
+  name: api
   labels:
-    app: sam-blackberry-api
+    app: api
     version: v1
 spec:
   selector:
     matchLabels:
-      app: sam-blackberry-api
+      app: api
       version: v1
   replicas: 1
   template:
     metadata:
-      name: sam-blackberry-api
+      name: api
       labels:
-        app: sam-blackberry-api
+        app: api
         version: v1
     spec:
       containers:
-        - name: sam-blackberry-api
-          image: myguddy/sam-blackberry-api:v1
+        - name: api
+          image: g3.skb:8500/btv/api:v1
           imagePullPolicy: Always
           volumeMounts:
           - name: app-config
