@@ -4,20 +4,31 @@ let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
 
 let client = new Client();
-client.registerMethod("getContent", `${endpoint.cms}/content/\${page}`, "GET");
+logger = (msg)=>{
+    let date = new Date();
+    console.log(`[sam-blackberry-api] ${date.toGMTString()}-${msg}`);
+}
+client.registerMethod("getContent", `${endpoint.cms}/api/content/\${page}`, "GET");
 client.registerMethod(
     "getContentByCategory",
-    `${endpoint.cms}/content/\${page}/\${category}`,
+    `${endpoint.cms}/api/content/\${page}/\${category}`,
     "GET"
 );
-client.registerMethod("getOffering", `${endpoint.cms}/offering`, "GET");
+client.registerMethod(
+    "getBestByCategory",
+    `${endpoint.cms}/api/best/\${category}`,
+    "GET"
+);
+client.registerMethod("getOffering", `${endpoint.cms}/api/offering`, "GET");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
+    logger("called health check")
     res.status(200).send("index of api service");
 });
 
 router.post("/login", (req, res, next) => {
+    logger(`login requested with..`)
     if ("Passw0rd" === req.body.password) {
         console.log(`user: ${req.body.user}`);
         res.json({
@@ -33,7 +44,7 @@ router.post("/login", (req, res, next) => {
 });
 
 router.get("/logout", (req, res, next) => {
-    console.log("log out");
+    logger("log out");
     res.json({
         status: "ok"
     });
@@ -50,6 +61,7 @@ router.get("/content/:page", (req, res, next) => {
         if (500 == response.statusCode) {
             res.status(500).json(data);
         } else {
+            logger(`get ${data.length} data of ${req.params.category}`)
             res.json(data);
         }
     });
@@ -62,6 +74,20 @@ router.get("/content/:page/:category", (req, res, next) => {
         if (500 == response.statusCode) {
             res.status(500).json(data);
         } else {
+            logger(`get ${data.length} data of ${req.params.category}`)
+            res.json(data);
+        }
+    });
+});
+router.get("/best/:category", (req, res, next) => {
+    let args = {
+        path: { category: req.params.category }
+    };
+    client.methods.getBestByCategory(args, (data, response) => {
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            logger(`get ${data.length} best recommand of ${req.params.category}`)
             res.json(data);
         }
     });
@@ -72,6 +98,7 @@ router.get("/offering", (req, res, next) => {
         if (500 == response.statusCode) {
             res.status(500).json(data);
         } else {
+            logger(`get ${data.length} offering data`)
             res.json(data);
         }
     });

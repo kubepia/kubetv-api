@@ -15,6 +15,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/v1', apiRouter);
+
+//TODO: make sure of base url v1 needed or not
+app.use('/api', apiRouter);
 
 module.exports = app;
