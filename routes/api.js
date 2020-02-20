@@ -24,6 +24,7 @@ client.registerMethod(
     "GET"
 );
 client.registerMethod("getOffering", `${endpoint.cms}/api/offering`, "GET");
+client.registerMethod("login", `${endpoint.account}/api/login`, "POST");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
@@ -33,18 +34,21 @@ router.get("/", function(req, res, next) {
 
 router.post("/login", (req, res, next) => {
     logger(`login requested with..`);
-    if ("Passw0rd" === req.body.password) {
-        console.log(`user: ${req.body.user}`);
-        res.json({
-            status: "ok"
-        });
-    } else {
-        console.log("password should be 'Passw0rd'");
-        res.json({
-            status: "error",
-            message: "password should be 'Passw0rd'"
-        });
-    }
+    let args = {
+        parameters: { 
+            userEmail: req.body.user_email, 
+            userPw: req.body.user_pw
+        },
+        // headers: req.headers
+    };
+    client.methods.login(args, (data, response) => {
+        if (200 !== response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            logger(`login ${req.body.user_email}`);
+            res.json(data);
+        }
+    });
 });
 
 router.get("/logout", (req, res, next) => {
