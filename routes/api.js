@@ -25,6 +25,7 @@ client.registerMethod(
 );
 client.registerMethod("getOffering", `${endpoint.cms}/api/offering`, "GET");
 client.registerMethod("login", `${endpoint.account}/api/login`, "POST");
+client.registerMethod("getUser", `${endpoint.account}/api/user/\${email}`, "GET");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
@@ -58,8 +59,22 @@ router.get("/logout", (req, res, next) => {
     });
 });
 
-router.get("/account", (req, res, next) => {});
-router.put("/account", (req, res, next) => {});
+router.get("/user", (req, res, next) => {
+    logger(`get user by ${req.params.user_email}`);
+    let args = {
+        path: { email: req.params.user_email },
+        // headers: req.headers
+    };
+    client.methods.getUser(args, (data, response) => {
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            logger(`get user info of ${req.params.user_email}`);
+            res.json(data);
+        }
+    });
+});
+router.put("/user", (req, res, next) => {});
 
 router.get("/content/:page", (req, res, next) => {
     let args = {
