@@ -49,11 +49,7 @@ spec:
     spec:
       containers:
         - name: api
-<<<<<<< HEAD:k8s/deploy.yaml
           image: g3.skb:8500/btv/api:latest
-=======
-          image: g3.skb:8500/btv/api:v1
->>>>>>> 68d5c559339b643b95f1786b50410734c32cd23b:k8s/k8s.yaml
           imagePullPolicy: Always
           volumeMounts:
           - name: app-config
