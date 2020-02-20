@@ -26,6 +26,7 @@ client.registerMethod(
 client.registerMethod("getOffering", `${endpoint.cms}/api/offering`, "GET");
 client.registerMethod("login", `${endpoint.account}/api/login`, "POST");
 client.registerMethod("getUser", `${endpoint.account}/api/user/\${email}`, "GET");
+client.registerMethod("updateUser", `${endpoint.account}/api/user`, "POST");
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
@@ -59,22 +60,40 @@ router.get("/logout", (req, res, next) => {
     });
 });
 
-router.get("/user", (req, res, next) => {
-    logger(`get user by ${req.params.user_email}`);
+router.get("/user/:email", (req, res, next) => {
+    logger(`get user by ${req.params.email}`);
     let args = {
-        path: { email: req.params.user_email },
+        path: { email: req.params.email },
         // headers: req.headers
     };
     client.methods.getUser(args, (data, response) => {
         if (500 == response.statusCode) {
             res.status(500).json(data);
         } else {
-            logger(`get user info of ${req.params.user_email}`);
+            logger(`get user info of ${req.params.email}`);
             res.json(data);
         }
     });
 });
-router.put("/user", (req, res, next) => {});
+router.post("/user", (req, res, next) => {
+    logger(`update user for ${req.params.email}`);
+    let args = {
+        parameters: { 
+            userEmail: req.body.user_email, 
+            userTel: req.body.user_tel,
+            userNickName: req.body.user_nickname,
+
+        },
+    };
+    client.methods.updateUser(args, (data, response) => {
+        if (500 == response.statusCode) {
+            res.status(500).json(data);
+        } else {
+            logger(`get user info of ${req.params.email}`);
+            res.json(data);
+        }
+    });
+});
 
 router.get("/content/:page", (req, res, next) => {
     let args = {
