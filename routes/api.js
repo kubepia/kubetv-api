@@ -3,6 +3,10 @@ let router = express.Router();
 let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
 
+let redis = require('redis')
+let redisClient = redis.createClient(endpoint.redis)
+
+
 let client = new Client();
 logger = msg => {
     let date = new Date();
@@ -41,13 +45,15 @@ router.post("/login", (req, res, next) => {
             userEmail: req.body.user_email, 
             userPw: req.body.user_pw
         },
-        // headers: req.headers
     };
     client.methods.login(args, (data, response) => {
         if (200 !== response.statusCode) {
             res.status(500).json(data);
         } else {
             logger(`login ${req.body.user_email}`);
+            redisClient.set(`${data.userEmail}`,`${data.membership}`)
+            res.cookie('private-token', data.userEmail, {httpOnly:true})
+            
             res.json(data);
         }
     });
@@ -64,7 +70,6 @@ router.get("/user/:email", (req, res, next) => {
     logger(`get user by ${req.params.email}`);
     let args = {
         path: { email: req.params.email },
-        // headers: req.headers
     };
     client.methods.getUser(args, (data, response) => {
         if (500 == response.statusCode) {
@@ -98,7 +103,6 @@ router.post("/user", (req, res, next) => {
 router.get("/content/:page", (req, res, next) => {
     let args = {
         path: { page: req.params.page },
-        // headers: req.headers
     };
     client.methods.getContent(args, (data, response) => {
         if (500 == response.statusCode) {
@@ -112,7 +116,6 @@ router.get("/content/:page", (req, res, next) => {
 router.get("/content/:page/:category/:include", (req, res, next) => {
     let args = {
         path: { page: req.params.page, category: req.params.category,include:req.params.include },
-        // headers: req.headers
     };
     client.methods.getContentByCategory(args, (data, response) => {
         if (500 == response.statusCode) {
@@ -126,7 +129,6 @@ router.get("/content/:page/:category/:include", (req, res, next) => {
 router.get("/content/:page/:category", (req, res, next) => {
     let args = {
         path: { page: req.params.page, category: req.params.category,include:true },
-        // headers: req.headers
     };
     client.methods.getContentByCategory(args, (data, response) => {
         if (500 == response.statusCode) {
@@ -140,7 +142,6 @@ router.get("/content/:page/:category", (req, res, next) => {
 router.get("/best/:category", (req, res, next) => {
     let args = {
         path: { category: req.params.category },
-        // headers: req.headers
     };
     client.methods.getBestByCategory(args, (data, response) => {
         if (500 == response.statusCode) {
@@ -154,18 +155,25 @@ router.get("/best/:category", (req, res, next) => {
     });
 });
 router.get("/offering", (req, res, next) => {
-    console.log(req.headers);
     
-    let args = {
-        // headers: req.headers
-    };
-    client.methods.getOffering(args, (data, response) => {
-        if (500 == response.statusCode) {
-            res.status(500).json(data);
-        } else {
-            logger(`get ${data.length} offering data`);
-            res.json(data);
+    redisClient.get(`${req.cookies['private-token']}`,(err,result)=>{
+        console.log(`token: ${result} by ${req.cookies['private-token']}`);
+        
+        let args={};
+        if(!!result){
+            args = {
+                headers: { "membership": result }
+            };
         }
-    });
+        client.methods.getOffering(args, (data, response) => {
+            if (500 == response.statusCode) {
+                res.status(500).json(data);
+            } else {
+                logger(`get ${data.length} offering data`);
+                res.json(data);
+            }
+        });
+    })
+    
 });
 module.exports = router;
