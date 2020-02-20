@@ -4,7 +4,8 @@ module.exports = {
         cms: "http://localhost:3002",
         redis: {
             port: 6379,
-            host: "localhost"
+            host: "localhost",
+            sentinel: false
         }
     }
 }
