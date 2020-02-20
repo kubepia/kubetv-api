@@ -155,9 +155,10 @@ router.get("/best/:category", (req, res, next) => {
     });
 });
 router.get("/offering", (req, res, next) => {
+    console.log("+==================+");
     
     redisClient.get(`${req.cookies['private-token']}`,(err,result)=>{
-        console.log(`token: ${result} by ${req.cookies['private-token']}`);
+        logger(`token: ${result} by ${req.cookies['private-token']}`);
         
         let args={};
         if(!!result){
