@@ -54,14 +54,14 @@ router.post("/login", (req, res, next) => {
             redisClient.set(`${data.userEmail}`,`${data.membership}`)
             res.cookie('private-token', data.userEmail, {httpOnly:true})
             
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
 
 router.get("/logout", (req, res, next) => {
     logger("log out");
-    res.json({
+    res.status(200).json({
         status: "ok"
     });
 });
@@ -76,7 +76,7 @@ router.get("/user/:email", (req, res, next) => {
             res.status(500).json(data);
         } else {
             logger(`get user info of ${req.params.email}`);
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -95,7 +95,7 @@ router.post("/user", (req, res, next) => {
             res.status(500).json(data);
         } else {
             logger(`get user info of ${req.params.email}`);
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -109,7 +109,7 @@ router.get("/content/:page", (req, res, next) => {
             res.status(500).json(data);
         } else {
             logger(`get ${data.length} data of ${req.params.category}`);
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -122,7 +122,7 @@ router.get("/content/:page/:category/:include", (req, res, next) => {
             res.status(500).json(data);
         } else {
             logger(`get ${data.length} data of ${req.params.category}`);
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -135,7 +135,7 @@ router.get("/content/:page/:category", (req, res, next) => {
             res.status(500).json(data);
         } else {
             logger(`get ${data.length} data of ${req.params.category}`);
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -150,7 +150,7 @@ router.get("/best/:category", (req, res, next) => {
             logger(
                 `get ${data.length} best recommand of ${req.params.category}`
             );
-            res.json(data);
+            res.status(200).json(data);
         }
     });
 });
@@ -170,7 +170,7 @@ router.get("/offering", (req, res, next) => {
                 res.status(500).json(data);
             } else {
                 logger(`get ${data.length} offering data`);
-                res.json(data);
+                res.status(200).json(data);
             }
         });
     })
