@@ -187,7 +187,7 @@ router.get("/offering", (req, res, next) => {
         let args = {};
         if (!!result) {
             args = {
-                headers: { membership: result }
+                headers: { membership: "vip" }
             };
         }
         client.methods.getOffering(args, (data, response) => {
