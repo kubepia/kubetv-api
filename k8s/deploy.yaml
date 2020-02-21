@@ -75,7 +75,7 @@ spec:
               path: /
               port: nodejs
             initialDelaySeconds: 3
-            periodSeconds: 10
+            periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /
