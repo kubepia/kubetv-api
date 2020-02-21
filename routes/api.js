@@ -2,8 +2,16 @@ let express = require("express");
 let router = express.Router();
 let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
-let axios = require("axios");
-axios.defaults.baseURL = `${endpoint.cms}/api`;
+const Agent = require('agentkeepalive');
+const keepAliveAgent = new Agent({
+    maxSockets: 100,
+    maxFreeSockets: 10,
+    timeout: 60000, // active socket keepalive for 60 seconds
+    freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+  });
+
+let _axios = require("axios");
+const axios = _axios.create({httpAgent: keepAliveAgent});
 
 const Redis = require("ioredis");
 var redisClient;
