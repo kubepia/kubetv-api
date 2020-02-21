@@ -18,5 +18,5 @@ app.use('/', indexRouter);
 
 //TODO: make sure of base url v1 needed or not
 app.use('/api', apiRouter);
-
+app.disable('etag')
 module.exports = app;
