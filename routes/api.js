@@ -189,6 +189,7 @@ router.get("/offering", (req, res, next) => {
             args = {
                 headers: { membership: "vip" }
             };
+            logger("vip traffic");
         }
         client.methods.getOffering(args, (data, response) => {
             if (500 == response.statusCode) {
