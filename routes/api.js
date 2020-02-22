@@ -9,7 +9,7 @@ const keepAliveAgent = new Agent({
     freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
 });
 
-let axios = require("axios");
+
 // const axios = _axios.create({ httpAgent: keepAliveAgent });
 
 const Redis = require("ioredis");
@@ -84,6 +84,7 @@ router.post("/login", (req, res, next) => {
 
 router.get("/user/:email", (req, res, next) => {
     logger(`get user by ${req.params.email}`);
+    let axios = require("axios");
     axios
         .get(`${endpoint.account}/api/user/${req.params.email}`)
         .then(response => {
@@ -98,7 +99,7 @@ router.get("/user/:email", (req, res, next) => {
 });
 router.post("/user", (req, res, next) => {
     logger(`update user for ${req.body.userEmail}`);
-
+    let axios = require("axios");
     axios
         .post(`${endpoint.account}/api/user`, {
             userEmail: req.body.userEmail,
@@ -127,6 +128,7 @@ router.get("/content/:page", (req, res, next) => {
         } else {
             header = axios.defaults.headers.common;
         }
+        let axios = require("axios");
         axios
             .get(`${endpoint.cms}/api/content/${req.params.page}`, {
                 headers: header
@@ -153,6 +155,7 @@ router.get("/content/:page/:category/:include", (req, res, next) => {
         } else {
             header = axios.defaults.headers.common;
         }
+        let axios = require("axios");
         axios
             .get(
                 `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}/${req.params.include}`,
@@ -182,6 +185,7 @@ router.get("/content/:page/:category", (req, res, next) => {
         } else {
             header = axios.defaults.headers.common;
         }
+        let axios = require("axios");
         axios
             .get(
                 `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}`,
@@ -211,6 +215,7 @@ router.get("/best/:category", (req, res, next) => {
         } else {
             header = axios.defaults.headers.common;
         }
+        let axios = require("axios");
         axios
             .get(`${endpoint.cms}/api/best/${req.params.category}`, {
                 headers: header
@@ -237,6 +242,7 @@ router.get("/offering", (req, res, next) => {
         } else {
             header = axios.defaults.headers.common;
         }
+        let axios = require("axios");
         axios
             .get(`${endpoint.cms}/api/offering`, {
                 headers: header
