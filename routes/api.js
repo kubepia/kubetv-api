@@ -9,8 +9,8 @@ const keepAliveAgent = new Agent({
     freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
 });
 
-let _axios = require("axios");
-const axios = _axios.create({ httpAgent: keepAliveAgent });
+let axios = require("axios");
+// const axios = _axios.create({ httpAgent: keepAliveAgent });
 
 const Redis = require("ioredis");
 var redisClient;
