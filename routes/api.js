@@ -2,16 +2,16 @@ let express = require("express");
 let router = express.Router();
 let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
-const Agent = require('agentkeepalive');
+const Agent = require("agentkeepalive");
 const keepAliveAgent = new Agent({
     maxSockets: 100,
     maxFreeSockets: 10,
     timeout: 60000, // active socket keepalive for 60 seconds
-    freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
-  });
+    freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
+});
 
 let _axios = require("axios");
-const axios = _axios.create({httpAgent: keepAliveAgent});
+const axios = _axios.create({ httpAgent: keepAliveAgent });
 
 const Redis = require("ioredis");
 var redisClient;
@@ -56,8 +56,6 @@ logger = msg => {
 // );
 // client.registerMethod("updateUser", `${endpoint.account}/api/user`, "POST");
 
-
-
 router.post("/login", (req, res, next) => {
     logger(`login requested with..`);
     axios
@@ -87,7 +85,6 @@ router.post("/login", (req, res, next) => {
 
 router.get("/user/:email", (req, res, next) => {
     logger(`get user by ${req.params.email}`);
-
     axios
         .get(`${endpoint.account}/api/user/${req.params.email}`)
         .then(response => {
@@ -122,84 +119,103 @@ router.post("/user", (req, res, next) => {
 
 router.get("/content/:page", (req, res, next) => {
     logger(`getcontent ${req.params.email}`);
-    axios
-        .get(`${endpoint.cms}/api/content/${req.params.page}`)
-        .then(response => {
-            let data = response.data;
-            logger(`got content`);
-            res.status(200).json(data);
-        })
-        .catch(error => {
-            logger(JSON.stringify(error));
-            res.status(500).json(error);
-        });
+    redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
+        logger(`token: ${result} by ${req.cookies["private-token"]}`);
+        let header = {};
+        if ("1" == result) {
+            header = { membership: "vip" };
+            logger("vip traffic");
+        } else {
+            header = axios.defaults.headers.common;
+        }
+        axios
+            .get(`${endpoint.cms}/api/content/${req.params.page}`, {
+                headers: header
+            })
+            .then(response => {
+                let data = response.data;
+                logger(`got content`);
+                res.status(200).json(data);
+            })
+            .catch(error => {
+                logger(JSON.stringify(error));
+                res.status(500).json(error);
+            });
+    });
 });
 router.get("/content/:page/:category/:include", (req, res, next) => {
     logger(`getcontent by category ${req.params.category}`);
-    axios
-        .get(
-            `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}/${req.params.include}`
-        )
-        .then(response => {
-            let data = response.data;
-            logger(`got content`);
-            res.status(200).json(data);
-        })
-        .catch(error => {
-            logger(JSON.stringify(error));
-            res.status(500).json(error);
-        });
-});
-router.get("/content/:page/:category", (req, res, next) => {
-    logger(`getcontent by category ${req.params.category}`);
-    axios
-        .get(
-            `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}`
-        )
-        .then(response => {
-            let data = response.data;
-            logger(`got content`);
-            res.status(200).json(data);
-        })
-        .catch(error => {
-            logger(JSON.stringify(error));
-            res.status(500).json(error);
-        });
-});
-router.get("/best/:category", (req, res, next) => {
-    logger(`getcontent for best by category ${req.params.category}`);
-    axios
-        .get(
-            `${endpoint.cms}/api/best/${req.params.category}`
-        )
-        .then(response => {
-            let data = response.data;
-            logger(`got best`);
-            res.status(200).json(data);
-        })
-        .catch(error => {
-            logger(JSON.stringify(error));
-            res.status(500).json(error);
-        });
-});
-router.get("/offering", (req, res, next) => {
-    logger(`getcontent for offering`);
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
-        let header={}
-        if (!!result) {
-            header={membership: "vip"}
+        let header = {};
+        if ("1" == result) {
+            header = { membership: "vip" };
             logger("vip traffic");
-        }else{
-            header=axios.defaults.headers.common
+        } else {
+            header = axios.defaults.headers.common;
         }
         axios
             .get(
-                `${endpoint.cms}/api/offering`,
+                `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}/${req.params.include}`,
                 {
                     headers: header
                 }
             )
+            .then(response => {
+                let data = response.data;
+                logger(`got content`);
+                res.status(200).json(data);
+            })
+            .catch(error => {
+                logger(JSON.stringify(error));
+                res.status(500).json(error);
+            });
+    });
+});
+router.get("/content/:page/:category", (req, res, next) => {
+    logger(`getcontent by category ${req.params.category}`);
+    redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
+        logger(`token: ${result} by ${req.cookies["private-token"]}`);
+        let header = {};
+        if ("1" == result) {
+            header = { membership: "vip" };
+            logger("vip traffic");
+        } else {
+            header = axios.defaults.headers.common;
+        }
+        axios
+            .get(
+                `${endpoint.cms}/api/content/${req.params.page}/${req.params.category}`,
+                {
+                    headers: header
+                }
+            )
+            .then(response => {
+                let data = response.data;
+                logger(`got content`);
+                res.status(200).json(data);
+            })
+            .catch(error => {
+                logger(JSON.stringify(error));
+                res.status(500).json(error);
+            });
+    });
+});
+router.get("/best/:category", (req, res, next) => {
+    logger(`getcontent for best by category ${req.params.category}`);
+    redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
+        logger(`token: ${result} by ${req.cookies["private-token"]}`);
+        let header = {};
+        if ("1" == result) {
+            header = { membership: "vip" };
+            logger("vip traffic");
+        } else {
+            header = axios.defaults.headers.common;
+        }
+        axios
+            .get(`${endpoint.cms}/api/best/${req.params.category}`, {
+                headers: header
+            })
             .then(response => {
                 let data = response.data;
                 logger(`got best`);
@@ -210,6 +226,31 @@ router.get("/offering", (req, res, next) => {
                 res.status(500).json(error);
             });
     });
-
+});
+router.get("/offering", (req, res, next) => {
+    logger(`getcontent for offering`);
+    redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
+        logger(`token: ${result} by ${req.cookies["private-token"]}`);
+        let header = {};
+        if ("1" == result) {
+            header = { membership: "vip" };
+            logger("vip traffic");
+        } else {
+            header = axios.defaults.headers.common;
+        }
+        axios
+            .get(`${endpoint.cms}/api/offering`, {
+                headers: header
+            })
+            .then(response => {
+                let data = response.data;
+                logger(`got best`);
+                res.status(200).json(data);
+            })
+            .catch(error => {
+                logger(JSON.stringify(error));
+                res.status(500).json(error);
+            });
+    });
 });
 module.exports = router;
