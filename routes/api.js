@@ -56,15 +56,7 @@ logger = msg => {
 // );
 // client.registerMethod("updateUser", `${endpoint.account}/api/user`, "POST");
 
-/* GET home page. */
-router.get("/liveness", function(req, res, next) {
-    logger("called liveness check");
-    res.status(200).send("index of api service");
-});
-router.get("/readyness", function(req, res, next) {
-    logger("called readyness check");
-    res.status(200).send("index of api service");
-});
+
 
 router.post("/login", (req, res, next) => {
     logger(`login requested with..`);

@@ -66,19 +66,19 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1000Mi
+              memory: 500Mi
             limits:
               cpu: 1000m
-              memory: 2048Mi
+              memory: 1000Mi
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: nodejs
             initialDelaySeconds: 3
             periodSeconds: 60
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: nodejs
             initialDelaySeconds: 1
             periodSeconds: 3
