@@ -74,14 +74,14 @@ spec:
             httpGet:
               path: /health
               port: nodejs
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
             periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /health
               port: nodejs
-            initialDelaySeconds: 1
-            periodSeconds: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
       - name: app-config
         configMap:
