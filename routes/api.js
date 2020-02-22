@@ -9,8 +9,9 @@ const keepAliveAgent = new Agent({
     freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
 });
 
-
+const _axios = require("axios");
 // const axios = _axios.create({ httpAgent: keepAliveAgent });
+const axios = _axios.create();
 
 const Redis = require("ioredis");
 var redisClient;
@@ -57,7 +58,7 @@ logger = msg => {
 
 router.post("/login", (req, res, next) => {
     logger(`login requested with..`);
-    let axios = require("axios");
+    // let axios = require("axios").create();
     axios
         .post(`${endpoint.account}/api/login`, {
             userEmail: req.body.userEmail,
@@ -85,7 +86,7 @@ router.post("/login", (req, res, next) => {
 
 router.get("/user/:email", (req, res, next) => {
     logger(`get user by ${req.params.email}`);
-    let axios = require("axios");
+    // let axios = require("axios");
     axios
         .get(`${endpoint.account}/api/user/${req.params.email}`)
         .then(response => {
@@ -100,7 +101,7 @@ router.get("/user/:email", (req, res, next) => {
 });
 router.post("/user", (req, res, next) => {
     logger(`update user for ${req.body.userEmail}`);
-    let axios = require("axios");
+    // let axios = require("axios");
     axios
         .post(`${endpoint.account}/api/user`, {
             userEmail: req.body.userEmail,
@@ -123,7 +124,7 @@ router.get("/content/:page", (req, res, next) => {
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
         let header = {};
-        let axios = require("axios");
+        // let axios = require("axios");
         if ("1" == result) {
             header = { membership: "vip" };
             logger("vip traffic");
@@ -151,7 +152,7 @@ router.get("/content/:page/:category/:include", (req, res, next) => {
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
         let header = {};
-        let axios = require("axios");
+        // let axios = require("axios");
         if ("1" == result) {
             header = { membership: "vip" };
             logger("vip traffic");
@@ -182,7 +183,7 @@ router.get("/content/:page/:category", (req, res, next) => {
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
         let header = {};
-        let axios = require("axios");
+        // let axios = require("axios");
         if ("1" == result) {
             header = { membership: "vip" };
             logger("vip traffic");
@@ -212,7 +213,7 @@ router.get("/best/:category", (req, res, next) => {
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
         let header = {};
-        let axios = require("axios");
+        // let axios = require("axios");
         if ("1" == result) {
             header = { membership: "vip" };
             logger("vip traffic");
@@ -239,7 +240,7 @@ router.get("/offering", (req, res, next) => {
     redisClient.get(`${req.cookies["private-token"]}`, (err, result) => {
         logger(`token: ${result} by ${req.cookies["private-token"]}`);
         let header = {};
-        let axios = require("axios");
+        // let axios = require("axios");
         if ("1" == result) {
             header = { membership: "vip" };
             logger("vip traffic");
