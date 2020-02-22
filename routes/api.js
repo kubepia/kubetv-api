@@ -26,7 +26,7 @@ if (endpoint.redis.sentinel) {
     });
 }
 
-let client = new Client();
+
 logger = msg => {
     let date = new Date();
     console.log(`[sam-blackberry-api] ${date.toGMTString()}-${msg}`);
