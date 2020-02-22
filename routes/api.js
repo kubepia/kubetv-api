@@ -1,6 +1,5 @@
 let express = require("express");
 let router = express.Router();
-let Client = require("node-rest-client").Client;
 let endpoint = require("../config").endpoint;
 const Agent = require("agentkeepalive");
 const keepAliveAgent = new Agent({
