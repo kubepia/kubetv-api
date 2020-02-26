@@ -21,7 +21,7 @@ data:
     module.exports = {
         endpoint : {
             account: "http://account-svc:8090",
-            cms: "http://cms.btv-backing:3002",
+            cms: "http://cms-svc.btv-backing:3002",
             redis: {
             port: 26379,
             host: "redis-sentinel.btv-backing",
