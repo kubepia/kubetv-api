@@ -21,11 +21,11 @@ data:
     module.exports = {
         endpoint : {
             account: "http://account-svc:8090",
-            cms: "http://cms-svc.btv-backing:3002",
+            cms: "http://cms-svc:3002",
             redis: {
-            port: 26379,
-            host: "redis-sentinel.btv-backing",
-            sentinel: true
+            port: 6379,
+            host: "redis-svc",
+            sentinel: false
         }
         }
     }
@@ -53,15 +53,15 @@ spec:
     spec:
       containers:
         - name: api
-          image: g3.skb:8500/btv/api:latest
+          image: kubepia/kubetv-api:latest
           imagePullPolicy: Always
           volumeMounts:
-          - name: app-config
-            mountPath: /app/config.js
-            subPath: "config.js"
+            - name: app-config
+              mountPath: /app/config.js
+              subPath: "config.js"
           ports:
-          - name: nodejs
-            containerPort: 3001
+            - name: nodejs
+              containerPort: 3001
           resources:
             requests:
               cpu: 500m
@@ -82,10 +82,9 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
-      - name: app-config
-        configMap:
-          name: api
-          items:
-          - key: config.js
-            path: config.js
-            
+        - name: app-config
+          configMap:
+            name: api
+            items:
+              - key: config.js
+                path: config.js
